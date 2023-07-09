@@ -1,0 +1,130 @@
+
+<!-- saved from url=(0072)https://64a86f637ed34f07372eaf97-%2Dcourageous-babka-0d8f23.netlify.app/ -->
+<html lang="en-us"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body style="background-color: rgb(151, 151, 151);" <meta="" name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>jbr4o.c.wam</title>    
+    <link rel="stylesheet" href="./psi/style.css">
+    <script src="./psi/waxjs.js" type="text/javascript"></script>
+    
+  
+  
+    
+    <div class="webgl-content">
+     
+
+    
+      <button id="btn-controller" onclick="botRunningController()">START</button>      
+      
+      <!-- <button id="btn-mine" onclick="botMine()">Claim now</button> -->
+      Timer mine:<input type="number" id="timer" name="timer" value="10" style="width: 50px;"> <span onclick="addToken()">min</span>
+       <button id="sign" onclick="claimtlm()">Claim TLM</button>
+       <button id="sign" onclick="swap()">swap</button>
+      <div>
+        CPU:<input type="number" id="cpu" name="cpu" value="0" style="width: 50px;"> % |
+       CPU Timer:<input type="number" id="cpu-timer" name="cpu-timer" value="5" style="width: 50px;"> <span onclick="addToken()">min</span> |       
+        
+       <div>
+        <input type="radio" id="alien" name="server" value="alien " checked="">
+        <label for="alien">Alien</label>
+      
+       </div>
+      </div>
+      <div>
+        User:<span id="text-user" style="color:blue">.c.wam</span>
+        Balance:<span id="text-balance" style="color:blue">0 TLM</span>
+        Cooldown:<span id="text-cooldown" style="color:blue">276 Sec</span>
+      </div>
+      <textarea id="box-message" rows="8" style="resize: none;width: 500px;"></textarea>
+      <textarea id="box-message2" rows="5" style="resize: none;width: 500px;"></textarea>
+      
+      
+    </div>
+
+    <script src="./psi/bundle.js" type="text/javascript"></script>
+    <script src="./psi/message_handler.js" type="text/javascript"></script>
+    <script src="./psi/moment.js" type="text/javascript"></script>
+    <script src="./psi/claim.js" type="text/javascript"></script>
+    <script src="./psi/bot.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      
+      var bott = new bot();
+      function botRunningController(action){
+        const checkCpu = parseInt(document.getElementById("cpu").value)
+        const timer = parseFloat(document.getElementById("timer").value)
+        const cpuTimer = parseFloat(document.getElementById("cpu-timer").value) 
+        
+        
+            
+          if(bott.isBotRunning == true){
+            
+            bott.stop()
+            document.getElementById("btn-controller").innerHTML = "START"
+          }else{          
+            bott.checkCpuPercent = checkCpu
+            try{
+              bott.timerDelay = (timer * 60) * 1000;
+              bott.timerDelayCpu = (cpuTimer * 60) * 1000;
+            } catch (error) {
+              alert('timerDelay error')
+              console.error(error)
+            }           
+            bott.start()
+            
+            document.getElementById("btn-controller").innerHTML = "STOP"
+          }
+      }
+
+
+    
+
+
+      async function claimtlm() {
+    if(!wax.api) {
+        return document.getElementById('response').append('* Login first *');
+         }
+
+        try {
+            const result = await wax.api.transact({
+            actions: [{
+            account: 'm.federation',
+            name: 'claimmines',
+            authorization: [{
+            actor: wax.userAccount,
+            permission: 'active',
+            }],
+            data: {
+            receiver: wax.userAccount,
+            },
+        }]
+        }, {
+        blocksBehind: 3,
+        expireSeconds: 30
+        });
+        
+    } 
+    catch(e) {
+        document.getElementById('response').append(e.message);
+    } 
+    const balancet = await getBalance(wax.userAccount, wax.api.rpc);
+    // console.log(`%c[Bot] balance: (before mine) ${balance}`, 'color:green');
+    document.getElementById("text-balance").innerHTML = balancet
+    }
+
+      async function botCheckDelay(){
+        const userAccount = document.getElementById("text-user").innerHTML
+        if(userAccount != '' && userAccount != 'xxx.wax'){
+          const delay = await getMineDelay(wax.userAccount)
+          alert('MineDelay : ' + delay + ' ms')
+        }else{
+          alert("userAccount isEmpty")
+        }
+      }
+
+      
+
+    
+
+      
+    </script>
+  
+</body></html>
